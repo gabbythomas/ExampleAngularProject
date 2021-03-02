@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Build') { 
             steps {
-                bat 'ng build tour-of-heroes'
+                sh 'ng build tour-of-heroes'
             }
         }
         stage('Deploy') { 
