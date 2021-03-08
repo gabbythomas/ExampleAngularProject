@@ -24,17 +24,21 @@ RUN npm install -g yarn \
 
 FROM app-env AS app-build
 
-COPY . /build
+COPY package.json /build/package.json
 WORKDIR /build
+RUN yarn install --pure-lockfile --no-cache
 
 # Create release build
-RUN yarn install --pure-lockfile --no-cache
+COPY . /build
 RUN ng build --configuration=production
 
 FROM app-env AS app-run
+
+RUN yarn global add serve \
+  && yarn cache clean --force
 
 # Run with only minimum set of files needed
 COPY --from=app-build /build/dist /app
 WORKDIR /app
 
-#ENTRYPOINT ["ng", "serve"]
+ENTRYPOINT ["serve", "tour-of-heroes/", "-p", "4200"]

@@ -8,18 +8,19 @@ pipeline {
         }
         stage('Build') { 
             steps {
-                sh 'npm install'
-                sh 'ng build tour-of-heroes'
+                sh "docker build -t example-angular-app ."
             }
         }
-        stage('Deploy') { 
+        stage('Publish') { 
             steps {
-                echo "Deploy"
+                sh "docker tag example-angular-app gabrient/example-angular-app:${env.BUILD_ID}"
+                sh "docker push gabrient/example-angular-app:${env.BUILD_ID}"
             }
         }
     }
     post {
     	always {
+            sh "docker system prune -f"
     	    cleanWs()
     	}
     }
