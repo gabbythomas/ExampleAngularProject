@@ -13,7 +13,9 @@ pipeline {
         }
         stage('Build') { 
             steps {
-                dockerImage = docker.build("gabrient/example-angular-app")
+                script {
+                    dockerImage = docker.build("gabrient/example-angular-app")
+                }
             }
         }
         stage('Publish') { 
@@ -21,8 +23,10 @@ pipeline {
                 branch 'main'
             }
             steps {
-                docker.withRegistry(registry, registryCredentials) {
-                    dockerImage.push("${env.BUILD_ID}")
+                script {
+                    docker.withRegistry(registry, registryCredentials) {
+                        dockerImage.push("${env.BUILD_ID}")
+                    }
                 }
             }
         }
