@@ -7,8 +7,8 @@ pipeline {
         deployContainerName = "example-angular-app-deploy"
     }
     agent any
-    stages('Remove Deploy') {
-        stage {
+    stages {
+        stage('Remove Deploy') {
             steps {
                 script {
                     sh """
