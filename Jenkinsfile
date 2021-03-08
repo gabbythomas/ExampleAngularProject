@@ -1,5 +1,6 @@
 pipeline {
-    agent any 
+    agent any
+    def dockerImage
     stages {
         stage('Checkout') { 
             steps {
@@ -8,13 +9,14 @@ pipeline {
         }
         stage('Build') { 
             steps {
-                sh "docker build -t example-angular-app ."
+                dockerImage = docker.build("gabrient/example-angular-app")
             }
         }
         stage('Publish') { 
             steps {
-                sh "docker tag example-angular-app gabrient/example-angular-app:${env.BUILD_ID}"
-                sh "docker push gabrient/example-angular-app:${env.BUILD_ID}"
+                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                    dockerImage.push("${env.BUILD_ID}")
+                }
             }
         }
     }
