@@ -1,6 +1,7 @@
+def dockerImage = 'null'
+
 pipeline {
     agent any
-    def dockerImage
     stages {
         stage('Checkout') { 
             steps {
@@ -13,6 +14,9 @@ pipeline {
             }
         }
         stage('Publish') { 
+            when {
+                branch 'main'
+            }
             steps {
                 docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
                     dockerImage.push("${env.BUILD_ID}")
