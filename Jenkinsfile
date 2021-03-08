@@ -13,7 +13,8 @@ pipeline {
                 script {
                     sh """
                         if docker container ls | grep ${deployContainerName}; then
-                            docker container stop ${deployContainerName} 
+                            docker container stop ${deployContainerName}
+                        fi
                     """
                 }
             }
