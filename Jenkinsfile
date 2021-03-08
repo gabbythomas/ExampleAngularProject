@@ -3,9 +3,21 @@ pipeline {
         registry = 'https://registry.hub.docker.com'
         registryCredentials = 'dockerhub_credentials'
         dockerImage = ''
+        dockerImageName = "gabrient/example-angular-app"
+        deployContainerName = "example-angular-app-deploy"
     }
     agent any
-    stages {
+    stages('Remove Deploy') {
+        stage {
+            steps {
+                script {
+                    sh """
+                        if docker container ls | grep ${deployContainerName}; then
+                            docker container stop ${deployContainerName} 
+                    """
+                }
+            }
+        }
         stage('Checkout') { 
             steps {
                 checkout scm
@@ -14,7 +26,7 @@ pipeline {
         stage('Build') { 
             steps {
                 script {
-                    dockerImage = docker.build("gabrient/example-angular-app")
+                    dockerImage = docker.build(dockerImageName)
                 }
             }
         }
@@ -28,6 +40,15 @@ pipeline {
                         dockerImage.push("${env.BUILD_ID}")
                     }
                 }
+            }
+        }
+        stage('Deploy') { 
+            when {
+                branch 'main'
+            }
+            steps {
+                sh "docker pull ${dockerImageName}:${env.BUILD_ID}"
+                sh "docker run -d --rm --name ${deployContainerName} -p 4200:4200 ${dockerImageName}"
             }
         }
     }
