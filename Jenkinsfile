@@ -1,6 +1,9 @@
-def dockerImage = 'null'
-
 pipeline {
+    environment {
+        registry = 'https://registry.hub.docker.com'
+        registryCredentials = 'dockerhub_credentials'
+        dockerImage = ''
+    }
     agent any
     stages {
         stage('Checkout') { 
@@ -18,7 +21,7 @@ pipeline {
                 branch 'main'
             }
             steps {
-                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                docker.withRegistry(registry, registryCredentials) {
                     dockerImage.push("${env.BUILD_ID}")
                 }
             }
